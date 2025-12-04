@@ -17,67 +17,135 @@
 ```
 # Knowledge Base .memories/
 
-目的：集中沉淀业务背景、产品决策与脚本实现细节，确保接手任务前后都能查阅与补充共享记忆。
+## 什么是记忆文件管理系统
+
+记忆文件管理系统是一套帮助你（AI）在大型项目中保持上下文记忆的方案。通过在项目根目录维护 `.memories/` 目录，集中沉淀业务背景、产品决策与代码实现细节，让你在接手任务时能快速理解项目，完成任务后能留下知识供后续查阅。
+
+## 为什么需要它
+
+- 大型项目代码量大，你无法一次性理解全部业务逻辑
+- 每次对话上下文有限，之前的决策和讨论容易丢失
+- 多次迭代后，历史决策的原因难以追溯
+- 通过结构化的记忆文件，你可以快速定位相关资料，避免重复踩坑
 
 ## 核心结构
 
-- `modules/` 存放按 `业务-主题` 命名的记忆模块；每个模块必须维护：
-  - `README.md`（导航）
-  - `PRD.md`（场景目标）
-  - 一个或多个 `FUNCTION-*.md`（流程与关键代码片段）
-- `modules/INDEX.md` 记录模块清单、负责人和更新时间，便于全局检索。
-- `templates/` 提供模块初始化模板，复制后按需填写。
-- `scripts/` 包含速查脚本，支持在命令行检索模块内容。
+```
+.memories/
+├── README.md              # 记忆主目录说明
+├── modules/               # 记忆模块目录
+│   ├── INDEX.md           # 模块索引（清单、负责人、更新时间）
+│   └── <业务-主题>/       # 具体模块，如 user-auth、order-flow
+│       ├── README.md      # 模块导航
+│       ├── PRD.md         # 产品需求、场景、边界
+│       └── FUNCTION-*.md  # 功能实现文档（可多个）
+├── templates/             # 模块模板
+│   └── module/
+│       ├── README.md
+│       ├── PRD.md
+│       └── FUNCTION.template.md
+└── scripts/               # 速查脚本
+    ├── memories-lookup.sh   # Linux/Mac
+    └── memories-lookup.cmd  # Windows
+```
 
-## 推荐流程
+## 你的工作流程
 
-1. **开工前**：执行 `.memories/scripts/memories-lookup.sh <模块目录名> [关键字...]`（或 Windows 版本 `.memories\scripts\memories-lookup.cmd ...`）快速定位资料。
-2. **阅读顺序**：先读模块 `README.md`，再查看 `PRD.md` 与相关 `FUNCTION-*.md` 核对实现约束。
-3. **收工后**：在对应文档补充新的决策、数据位置或遗留问题，并更新 `modules/INDEX.md`。
+### 第一步：检查项目是否已有记忆系统
 
-## Memories 文件管理规范
+开始任何任务前，先检查项目根目录是否存在 `.memories/` 目录。
 
-`./.memories/`（下文简称 `./memories/`）存放团队共享的"记忆"资料，用于速记业务背景与开发决策。开工前先读相关模块，收工后同步更新，保持资料实时。
+### 第二步：如果不存在，主动搭建
 
-### 目录结构
+如果项目中没有 `.memories/` 目录，你需要主动为项目初始化这套体系：
 
-每个模块位于 `./memories/modules/<业务-主题>/`，命名采用小写加连字符。
+1. 创建目录结构：
+   ```bash
+   mkdir -p .memories/modules .memories/templates/module .memories/scripts
+   ```
 
-### 必备文件
+2. 创建 `.memories/README.md`（记忆主目录说明）
 
-- `README.md` — 模块导航，列出 FUNCTION 文档及其他资料。
-- `PRD.md` — 产品/业务目标、用户场景与边界假设。
-- `FUNCTION-*.md` — 单个函数、脚本或流程的说明文档，可按需创建多个。在这里，需要你结合实际的代码情况，介绍业务的实现逻辑，并嵌入关键代码片段便于速查。
+3. 创建 `.memories/modules/INDEX.md`（模块索引）
 
-### 操作流程
+4. 创建模板文件：
+   - `.memories/templates/module/README.md`（模块导航模板）
+   - `.memories/templates/module/PRD.md`（产品需求模板）
+   - `.memories/templates/module/FUNCTION.template.md`（功能文档模板）
 
-1. 开始任务前，先阅读模块 `README.md`，再按需查看 `PRD.md` 与相关 `FUNCTION-*.md`。
-2. 任务完成后，补充新的决策、假设、数据位置或遗留问题。
-3. 新增模块时，复制 `.memories/templates/module/` 模板并填写，再在 `modules/INDEX.md` 登记。
-4. 需要速查记忆内容时，执行 `sh .memories/scripts/memories-lookup.sh <模块目录名> [关键字...]`；Windows 环境使用 `.memories\scripts\memories-lookup.cmd <模块目录名> [关键字...]`。缺少 module 参数脚本会拒绝执行，可用 `--list-modules` 查看支持的模块列表。
+5. 创建速查脚本（可选）：
+   - `.memories/scripts/memories-lookup.sh`
+   - `.memories/scripts/memories-lookup.cmd`
 
-### 命名规范
+6. 根据当前任务涉及的业务，创建第一个记忆模块
 
-- 模块目录采用 `业务-主题` 形式（示例：`demand-forecast`），使用小写加连字符。
-- 模块下必须包含：
-  - `README.md`：模块导引，列出功能文档清单与快速导航。
-  - `PRD.md`：业务或功能的目标、用户、场景与边界。
-  - `FUNCTION-*.md`：每个函数/脚本/流程一份，文件名使用大写字母与连字符（示例：`FUNCTION-LOAD-BASELINE.md`）。
-- 补充资料（数据字典、协议等）可建立子文件夹，但需在模块 `README.md` 中登记链接。
+### 第三步：如果已存在，查阅相关模块
 
-### 快速开始示例（PowerShell）
+1. 执行 `--list-modules` 查看现有模块列表：
+   ```bash
+   sh .memories/scripts/memories-lookup.sh --list-modules
+   # Windows: .memories\scripts\memories-lookup.cmd --list-modules
+   ```
 
-Copy-Item -Recurse .memories/templates/module .memories/modules/demand-forecast
-Rename-Item .memories/modules/demand-forecast/FUNCTION.template.md FUNCTION-CALC-PEAK.md
+2. 如果相关模块已存在：
+   - 执行 `.memories/scripts/memories-lookup.sh <模块目录名> [关键字...]` 快速定位资料
+   - 先读模块 `README.md`，再查看 `PRD.md` 与相关 `FUNCTION-*.md`
+   - 核对实现约束后再动手
 
-复制后请逐项填写模板字段，并在 `modules/INDEX.md` 登记模块信息。
+3. 如果相关模块不存在，新建模块：
+   ```powershell
+   # PowerShell
+   Copy-Item -Recurse .memories/templates/module .memories/modules/<业务-主题>
+   # Linux/Mac
+   cp -r .memories/templates/module .memories/modules/<业务-主题>
+   ```
+   - 将 `FUNCTION.template.md` 重命名为具体功能名，如 `FUNCTION-LOGIN.md`
+   - 填写 `README.md`、`PRD.md` 的基本信息
+   - 在 `modules/INDEX.md` 中登记新模块
+
+### 第四步：收工后更新记忆
+
+1. 在对应文档中补充你本次工作中产生的：
+   - 新的决策及其原因
+   - 数据位置、接口地址等关键信息
+   - 遗留问题或技术债务
+   - 踩过的坑和解决方案
+
+2. 更新 `modules/INDEX.md` 中的"最后更新"时间
+
+## 模块文件说明
+
+### README.md（模块导航）
+
+列出模块包含的所有文档，提供快速导航入口。
+
+### PRD.md（产品需求）
+
+记录：
+- 业务目标：这个模块要解决什么问题
+- 用户场景：谁在什么情况下使用
+- 边界假设：前提条件和限制
+
+### FUNCTION-*.md（功能文档）
+
+记录单个函数、脚本或流程的实现细节：
+- 输入输出说明
+- 核心实现逻辑
+- 关键代码片段（便于速查）
+- 依赖关系
+- 注意事项和踩坑记录
+
+## 命名规范
+
+- 模块目录：`业务-主题` 形式，小写加连字符（如 `user-auth`、`order-flow`）
+- 功能文档：`FUNCTION-功能名.md`，大写加连字符（如 `FUNCTION-LOGIN.md`）
 ```
 
 ---
 
 ## 配套资源
 
-本仓库已包含完整的 `.memories/` 目录结构：
+本仓库已包含完整的 `.memories/` 目录结构，可直接复制到你的项目中使用：
 
 ```
 .memories/
