@@ -87,7 +87,7 @@
    # Windows: .memories\scripts\memories-lookup.cmd --list-modules
    ```
 
-2. 如果相关模块已存在：
+2. 如果相关模块已存在： 
    - 执行 `.memories/scripts/memories-lookup.sh <模块目录名> [关键字...]` 快速定位资料
    - 先读模块 `README.md`，再查看 `PRD.md` 与相关 `FUNCTION-*.md`
    - 核对实现约束后再动手
